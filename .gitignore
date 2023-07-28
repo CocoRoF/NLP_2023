@@ -1,0 +1,6 @@
+*.pyc
+*.pth
+Docs/
+Image/
+
+.DS_Store
