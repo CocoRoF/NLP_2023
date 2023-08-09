@@ -4,5 +4,7 @@ Docs/
 Image/
 Openai_API_Key.txt
 Data/
+LangChain.ipynb
+GPT.ipynb
 
 .DS_Store
