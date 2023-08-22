@@ -1,0 +1,8 @@
+*.pyc
+*.pth
+Docs/
+Image/
+Openai_API_Key.txt
+Data/
+
+.DS_Store
