@@ -34,7 +34,7 @@ def emotion_chat(text:str, temperature:float=0) -> dict[str, int]:
   emo_chat = ChatOpenAI(model_name='gpt-4', temperature = temperature)
   schema = {
       "properties" : {
-          "emotion" : {"type" : "string", "enum" : ['Anger', 'Disgust', 'Fear', 'Happiness', 'Contempt', 'Sadness', "Surprise"]},
+          "emotion" : {"type" : "string", "enum" : ['Anger', 'Disgust', 'Fear', 'Happiness', 'Contempt', 'Sadness', 'Surprise']},
           "aggressiveness": {"type" : 'integer', "enum" : [1,2,3,4,5], "description" : "describes how aggressive the statement is, the higher the more aggressive"}
       }
   }
@@ -56,7 +56,7 @@ def positive_chat(text:str, emotion:bool=False, temperature:float=0.8, emot_temp
     if load_memory == 'Default':
       positive_memory = ConversationBufferWindowMemory(k=1, memory_key="chat_history", return_messages=True, input_key="review")
       positive_memory.save_context(
-        {"review" : "사용자의 감정 = Happiness, 사용자의 리뷰 = 믿고쓰는 상품! 너무나도 만족합니다. 항상 좋은 제품 제공해주셔서 너무나도 감사합니다. 배송도 빠르고 서비스도 너무 좋아요 ^^"},
+        {"review" : "고객의 감정 = Happiness, 고객의 리뷰 = 믿고쓰는 상품! 너무나도 만족합니다. 항상 좋은 제품 제공해주셔서 너무나도 감사합니다. 배송도 빠르고 서비스도 너무 좋아요 ^^"},
         {"output" : "안녕하세요 고객님, 고객님의 행복이 저희에게도 큰 행복입니다! 항상 저희 제품을 사용해주셔서 대단히 감사합니다. 앞으로도 좋은 서비스로 보답할 수 있도록 하겠습니다. 고맙습니다."})
     else:
       positive_memory = load_memory
@@ -67,17 +67,17 @@ def positive_chat(text:str, emotion:bool=False, temperature:float=0.8, emot_temp
       prompt = ChatPromptTemplate(
         input_variables=["user_emot", "review"],
         messages = [
-          SystemMessagePromptTemplate.from_template("당신은 긍정적인 리뷰에 답변을 달아주는 유용한 AI 봇입니다. 사용자의 칭찬에 감사와 고마움을 표하는 답변을 작성하세요. 사용자의 감정을 고려하여 답변하세요."),
-          HumanMessagePromptTemplate.from_template("사용자의 감정 = {user_emot}, 사용자의 리뷰 = {review}")
+          SystemMessagePromptTemplate.from_template("긍정적인 리뷰에 답하는 AI 봇으로서 주어지는 리뷰에 대한 답변을 작성하세요. 고객에 대한 감사함을 표현하세요. 고객의 감정을 고려하여 답변하세요. 고객의 감정은 ['Anger', 'Disgust', 'Fear', 'Happiness', 'Contempt', 'Sadness', 'Surprise']가 존재합니다."),
+          HumanMessagePromptTemplate.from_template("고객의 감정 = {user_emot}, 고객의 리뷰 = {review}")
         ]
       )
     else:
       prompt = ChatPromptTemplate(
         input_variables=["chat_history", "user_emot", "review"],
         messages = [
-          SystemMessagePromptTemplate.from_template("당신은 긍정적인 리뷰에 답변을 달아주는 유용한 AI 봇입니다. 사용자의 칭찬에 감사와 고마움을 표하는 답변을 작성하세요. 사용자의 감정을 고려하여 답변하세요."),
+          SystemMessagePromptTemplate.from_template("긍정적인 리뷰에 답하는 AI 봇으로서 주어지는 리뷰에 대한 답변을 작성하세요. 고객에 대한 감사함을 표현하세요. 고객의 감정을 고려하여 답변하세요. 고객의 감정은 ['Anger', 'Disgust', 'Fear', 'Happiness', 'Contempt', 'Sadness', 'Surprise']가 존재합니다."),
           MessagesPlaceholder(variable_name="chat_history"),
-          HumanMessagePromptTemplate.from_template("사용자의 감정 = {user_emot}, 사용자의 리뷰 = {review}")
+          HumanMessagePromptTemplate.from_template("고객의 감정 = {user_emot}, 고객의 리뷰 = {review}")
         ]
       )
 
@@ -107,7 +107,7 @@ def positive_chat(text:str, emotion:bool=False, temperature:float=0.8, emot_temp
       prompt = ChatPromptTemplate(
         input_variables=["review"],
         messages = [
-          SystemMessagePromptTemplate.from_template("당신은 긍정적인 리뷰에 답변을 달아주는 유용한 AI 봇입니다. 상대방의 칭찬에 감사와 고마움을 표하는 답변을 작성하세요."),
+          SystemMessagePromptTemplate.from_template("긍정적인 리뷰에 답하는 AI 봇으로서 주어지는 리뷰에 대한 답변을 작성하세요. 고객에 대한 감사함을 표현하세요."),
           HumanMessagePromptTemplate.from_template("{review}")
           ]
       )
@@ -115,7 +115,7 @@ def positive_chat(text:str, emotion:bool=False, temperature:float=0.8, emot_temp
       prompt = ChatPromptTemplate(
         input_variables=["chat_history", "review"],
         messages = [
-          SystemMessagePromptTemplate.from_template("당신은 긍정적인 리뷰에 답변을 달아주는 유용한 AI 봇입니다. 상대방의 칭찬에 감사와 고마움을 표하는 답변을 작성하세요."),
+          SystemMessagePromptTemplate.from_template("긍정적인 리뷰에 답하는 AI 봇으로서 주어지는 리뷰에 대한 답변을 작성하세요. 고객에 대한 감사함을 표현하세요."),
           MessagesPlaceholder(variable_name="chat_history"),
           HumanMessagePromptTemplate.from_template("{review}")
           ]
@@ -144,7 +144,7 @@ def negative_chat(text:str, emotion:bool=False, temperature:float=0.8, emot_temp
     if load_memory == 'Default':
       negative_memory = ConversationBufferWindowMemory(k=1, memory_key="chat_history", return_messages=True, input_key="review")
       negative_memory.save_context(
-        {"review" : "사용자의 감정 = Contempt, 사용자의 리뷰 = 예쁘고 심플해서 샀는데. 재질이 깔끄러워요. 살에 자국 다 베이고ㅠㅠ....폭망이에요. 재대로 확인안한 제 잘못이죠;;; 참고로 싱글세트 2. 퀸세트 1 샀습니다."},
+        {"review" : "고객의 감정 = Contempt, 고객의 리뷰 = 예쁘고 심플해서 샀는데. 재질이 깔끄러워요. 살에 자국 다 베이고ㅠㅠ....폭망이에요. 재대로 확인안한 제 잘못이죠;;; 참고로 싱글세트 2. 퀸세트 1 샀습니다."},
         {"output" : "안녕하세요 고객님, 먼저 저희 제품을 선택해 주신 것에 대한 감사함을 먼저 표합니다. 싱글세트와 퀸세트를 구매해주셨는데, 의도치않게 불편을 드리게 되어 정말로 죄송합니다. 추후에는 이러한 부분을 보완하여 더욱 좋은 상품을 제공할 수 있도록 노력하겠습니다. 감사합니다."})
 
     else:
@@ -156,17 +156,17 @@ def negative_chat(text:str, emotion:bool=False, temperature:float=0.8, emot_temp
       prompt = ChatPromptTemplate(
         input_variables=["user_emot", "review"],
         messages = [
-          SystemMessagePromptTemplate.from_template("당신은 부정적인 리뷰에 답변을 달아주는 유용한 AI 봇입니다. 고객의 마음을 이해하고 위로하는 답변을 작성하세요. 사용자의 감정을 고려하여 답변하세요."),
-          HumanMessagePromptTemplate.from_template("사용자의 감정 = {user_emot}, 사용자의 리뷰 = {review}")
+          SystemMessagePromptTemplate.from_template("부정적인 리뷰에 답하는 AI 봇으로서 주어지는 리뷰에 대한 답변을 작성하세요. 고객의 마음을 이해하고, 고객에 대한 죄송함을 표현하세요. 고객의 감정을 고려하여 답변하세요. 고객의 감정은 ['Anger', 'Disgust', 'Fear', 'Happiness', 'Contempt', 'Sadness', 'Surprise']가 존재합니다."),
+          HumanMessagePromptTemplate.from_template("고객의 감정 = {user_emot}, 고객의 리뷰 = {review}")
           ]
       )
     else:
       prompt = ChatPromptTemplate(
         input_variables=["chat_history", "user_emot", "review"],
         messages = [
-          SystemMessagePromptTemplate.from_template("당신은 부정적인 리뷰에 답변을 달아주는 유용한 AI 봇입니다. 고객의 마음을 이해하고 위로하는 답변을 작성하세요. 사용자의 감정을 고려하여 답변하세요."),
+          SystemMessagePromptTemplate.from_template("부정적인 리뷰에 답하는 AI 봇으로서 주어지는 리뷰에 대한 답변을 작성하세요. 고객의 마음을 이해하고, 고객에 대한 죄송함을 표현하세요. 고객의 감정을 고려하여 답변하세요. 고객의 감정은 ['Anger', 'Disgust', 'Fear', 'Happiness', 'Contempt', 'Sadness', 'Surprise']가 존재합니다."),
           MessagesPlaceholder(variable_name="chat_history"),
-          HumanMessagePromptTemplate.from_template("사용자의 감정 = {user_emot}, 사용자의 리뷰 = {review}")
+          HumanMessagePromptTemplate.from_template("고객의 감정 = {user_emot}, 고객의 리뷰 = {review}")
           ]
       )
 
@@ -195,7 +195,7 @@ def negative_chat(text:str, emotion:bool=False, temperature:float=0.8, emot_temp
       prompt = ChatPromptTemplate(
         input_variables=["user_emot", "review"],
         messages = [
-          SystemMessagePromptTemplate.from_template("당신은 부정적인 리뷰에 답변을 달아주는 유용한 AI 봇입니다. 고객의 마음을 이해하고 위로하는 답변을 작성하세요."),
+          SystemMessagePromptTemplate.from_template("부정적인 리뷰에 답하는 AI 봇으로서 주어지는 리뷰에 대한 답변을 작성하세요. 고객의 마음을 이해하고, 고객에 대한 죄송함을 표현하세요."),
           HumanMessagePromptTemplate.from_template("{review}")
           ]
       )
@@ -203,7 +203,7 @@ def negative_chat(text:str, emotion:bool=False, temperature:float=0.8, emot_temp
       prompt = ChatPromptTemplate(
         input_variables=["chat_history", "user_emot", "review"],
         messages = [
-          SystemMessagePromptTemplate.from_template("당신은 부정적인 리뷰에 답변을 달아주는 유용한 AI 봇입니다. 고객의 마음을 이해하고 위로하는 답변을 작성하세요."),
+          SystemMessagePromptTemplate.from_template("부정적인 리뷰에 답하는 AI 봇으로서 주어지는 리뷰에 대한 답변을 작성하세요. 고객의 마음을 이해하고, 고객에 대한 죄송함을 표현하세요."),
           MessagesPlaceholder(variable_name="chat_history"),
           HumanMessagePromptTemplate.from_template("{review}")
           ]
