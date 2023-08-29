@@ -6,7 +6,7 @@ from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder, SystemMes
 from langchain.chains import LLMChain
 from langchain.document_loaders.csv_loader import CSVLoader
 
-
+#감성분석 모듈 gpt4 한걸 => 라마 2 (gpt4 감성분석한 결과를 라마투가 학습 그러면 감성분석 라마 2  ) 모듈 1 
 def sentiment_chat(text:str, temperature:float=0) -> dict[str, int]:
   """
   감성분석을 수행하는 모듈. 기본적인 Temperature를 0으로 설정해서, 대부분의 경우에서 동일한 답변을 수행하도록 하였음
@@ -24,7 +24,7 @@ def sentiment_chat(text:str, temperature:float=0) -> dict[str, int]:
   answer = senti_chain.run(text)
 
   return answer
-
+#감정분석 7감정중하나 뽑기 gp4 =>라마 2 감정분석라마 2 
 def emotion_chat(text:str, temperature:float=0) -> dict[str, int]:
   """
   감정분석을 수행하는 모듈. 기본적인 Temperature를 0으로 설정해서, 대부분의 경우에서 동일한 답변을 수행하도록 하였음
@@ -42,7 +42,7 @@ def emotion_chat(text:str, temperature:float=0) -> dict[str, int]:
   answer = emo_chain.run(text)
 
   return answer
-
+# 긍정체팅 받아서 감정 감성을 받아서 데이터를 만들어내는 모듈 
 def positive_chat(text:str, emotion:bool=False, temperature:float=0.8, emot_tempe:float=0, verbose:bool=False, load_memory='Default') -> str:
   """
   긍정적 채팅에 대한 리뷰 답변을 생성하는 모듈.
@@ -130,7 +130,7 @@ def positive_chat(text:str, emotion:bool=False, temperature:float=0.8, emot_temp
 
     answer = conversation({"review" : text})['text']
     return answer
-
+# 부정
 def negative_chat(text:str, emotion:bool=False, temperature:float=0.8, emot_tempe:float=0, verbose:bool=False, load_memory='Default') -> str:
   """
   부정적 채팅에 대한 리뷰 답변을 생성하는 모듈.
