@@ -221,4 +221,82 @@ def negative_chat(text:str, emotion:bool=False, temperature:float=0.8, emot_temp
   
 def data_loader_csv(path:str, argument:dict):
     loader = CSVLoader(file_path = path, csv_args=argument)
-    data = loader.load()  
+    data = loader.load()
+    
+def user_purpose(text:str, temperature:float=0) -> dict[str]:
+  """
+  의도분석을 수행하는 모듈. (1차 분류)
+  몇 가지 논문을 참고하여 고객의 리뷰의도를 다음과 같이 구분함.
+  1. 본인의 긍정적 경험에 대한 공유
+  2. 공급자에 대한 칭찬
+  3. 회사 및 제품에 대한 비난/비판 (2차 분류로 이어짐)
+  4. 다른 고객에게 부정적 정보를 전달(concern for other consumers)
+  """
+  chat_LLM = ChatOpenAI(model_name='gpt-4', temperature=temperature)
+  schema = {
+      "properties": {
+          "purpose" : {"type" : "string", "enum" : ['For Sharing Positive Experience', 'For Helping The Company', 'For Venting Negative Feeling', 'For Concerning for Other Consumers'], "description" : 'Describes why consumers write the reviews'},
+      },
+      "required" : ["purpose"]
+  }
+  user_purpose_chain = create_tagging_chain(schema, chat_LLM)
+  answer = user_purpose_chain.run(text)
+
+  return answer
+
+def specific_negative_purpose(text:str, temperature:float=0) -> dict[str, int]:
+  """
+  만약 비난/비판 관련 의도로 파악된 경우 세부적인 목적을 구분하기 위한 모듈. (2차 분류)
+  1. 질나쁜 서비스에 대한 복수 및 가해. (나쁜 의도의 리뷰)
+  2. 서비스 제공자에게 더욱 친절한 서비스를 이끌어 내기 위함. (Customers want more upfront policies)
+  3. 다른 사람들과 힘을 모으기 위함. (나쁜 서비스가 한 번이 아니라, 여러번 이뤄지고 있음을 강력하게 지지하기 위함)
+  4. 환불을 원하는 경우.
+  5. 회사의 사과를 원하는 경우.
+  6. 특정 문제에 대한 해결을 하기 위함. (3차 분류로 이어짐. 특정 제품/특정 서비스 한정)
+  """
+  chat_LLM = ChatOpenAI(model_name='gpt-4', temperature=temperature)
+  schema = {
+      "properties": {
+          "negative_purpose" : {"type" : "string", "enum" : ['For Harm and Vengeance', 'For Taking More Accommodating Service', 'For Collective Power from other Consumers', 'For taking Refund', 'For taking Apology', 'For Solving Specific Problem'], "description" : "Describes why consumers write Negative Purpose's reviews"},
+      },
+      "required" : ["negative_purpose"]
+  }
+  specific_negative_purpose_chain = create_tagging_chain(schema, chat_LLM)
+  answer = specific_negative_purpose_chain.run(text)
+
+  return answer
+
+def problem_schema(problem_list:list) -> dict:
+    problem = {'type' : 'string', 'enum' : problem_list, 'description' : "Classify which problem do consumers have"}
+    problem_dict = {'problem' : problem}
+    schema = {'properties' : problem_dict, 'required' : ['problem']}
+    
+    return schema
+
+def specific_problem(text:str, temperature:float=0, problem_list:list = None) -> dict[str, int]:
+  """
+  특정 제품이나 서비스 한정으로 발생하는 문제들을 구분하기 위한 모듈. (3차 분류)
+  해당 제품 서비스에서 빈번하게 발생하는 서비스에 대한 schema를 생성하여 Input으로 입력해야 함.
+  """
+  chat_LLM = ChatOpenAI(model_name='gpt-4', temperature=temperature)
+  schema = problem_schema(problem_list)
+  specific_negative_purpose_chain = create_tagging_chain(schema, chat_LLM)
+  answer = specific_negative_purpose_chain.run(text)
+
+  return answer
+
+def total_purpose_classifier(text:str, temperature:float=0, problem_list:list = None) -> dict:
+      purpose = None
+      negative_purpose = None
+      problem = None
+      
+      purpose = user_purpose(text, temperature = temperature)['purpose']
+      if purpose == "For Venting Negative Feeling":
+        negative_purpose = specific_negative_purpose(text, temperature = temperature)['negative_purpose']
+        
+        if negative_purpose == "For Solving Specific Problem":
+          problem = specific_problem(text, temperature = temperature)['problem']
+      
+      answer = {'user_purpose' : purpose, 'negative_purpose' : negative_purpose, 'problem' : problem}
+       
+      return answer
