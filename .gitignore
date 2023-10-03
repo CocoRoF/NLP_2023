@@ -1,9 +1,12 @@
 *.pyc
 *.pth
 Docs/
+Data/
 Image/
 Openai_API_Key.txt
 Data/OtherData/
 Shared_Folder/
+Llama-2-13b-chat/
+llama-main/
 
 .DS_Store

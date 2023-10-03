@@ -26,7 +26,7 @@ class Review_Chain_model():
                               'Purpose' : self.review_purpose_1, 'Negative_Purpose' : self.review_purpose_2, 'Problem' : self.review_purpose_3}
       
       def show_variables(self):
-            print(self.variables)
+            return self.variables
             
       def Run_Answer(self):
             if self.memory == 'Default':

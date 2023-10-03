@@ -1,9 +1,0 @@
-Sentiemnt = ['Positive', 'Neutral', 'Negative']
-Emotion = ['Anger', 'Disgust', 'Fear', 'Happiness', 'Contempt', 'Sadness', 'Surprise']
-
-Score
-1 = 그 감성/감정이긴 하지만 확실하게 약함
-2 = 그 감성/감정이긴 하지만 약함
-3 = 그 감성/감정이 나타남
-4 = 그 감성/감정으로 생각됨
-5 = 그 감성/감정이 누가봐도 확실함
