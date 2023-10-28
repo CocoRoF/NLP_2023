@@ -1,4 +1,16 @@
 import pandas as pd
+import math
+
+def insert_text_after(target_string, search_text, insert_text):
+    index = target_string.find(search_text)
+    
+    if index == -1:
+        return target_string
+
+    return target_string[:index + len(search_text)] + insert_text + target_string[index + len(search_text):]
+
+def up_ten(n):
+    return math.ceil(n / 10.0) * 10
 
 def response_parser(s):
     lines = s.split('\n')
