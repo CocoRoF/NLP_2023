@@ -24,6 +24,7 @@ def sentiment_chat(text:str, temperature:float=0) -> dict[str, int]:
   answer = senti_chain.run(text)
 
   return answer
+
 #감정분석 7감정중하나 뽑기 gp4 =>라마 2 감정분석라마 2 
 def emotion_chat(text:str, temperature:float=0) -> dict[str, int]:
   """

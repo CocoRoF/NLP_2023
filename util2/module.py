@@ -1,11 +1,8 @@
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
-from langchain.schema import StrOutputParser
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.output_parsers.openai_functions import JsonOutputFunctionsParser
 from util2.prompt import analysis_prompt_selector, response_prompt_selector, Response_output_selector
-from util2.tools import response_parser
-import json
 import os
 
 # API Load
@@ -32,12 +29,7 @@ def review_analyzer(user_review:str, analyzer_prompt_number:int = 0, analyzer_te
     return result
     
     
-def responder(user_review:str, responder_prompt_number:int = 0, responder_temperature:float = 0, analyzer_prompt_number:int = 0, analyzer_temperature:float = 0, show_total_result:bool = False):
-    review_analysis = review_analyzer(user_review, analyzer_prompt_number, analyzer_temperature)
-    User_Sentiment = review_analysis['User_Sentiment']
-    User_Emotion = review_analysis['User_Emotion']
-    User_Intention = review_analysis['User_Intention']
-    
+def responder(user_review:str, responder_prompt_number:int = 0, responder_temperature:float = 0, User_Sentiment:str = None, User_Emotion:str = None, User_Intention:str = None):
     responder_prompt = response_prompt_selector(responder_prompt_number)
     responder_model = ChatOpenAI(model="gpt-4", temperature=responder_temperature)
     responder_function = Response_output_selector(prompt_num=0)
@@ -47,11 +39,18 @@ def responder(user_review:str, responder_prompt_number:int = 0, responder_temper
         {"customer_sentiment" : User_Sentiment, "customer_emotion" : User_Emotion, "customer_intention" : User_Intention, "review" : user_review})
     
     return response
-    # result = response_parser(response.content)
-    # if show_total_result:
-    #     return result
-    # else:
-    #     return result['Final_response']
+
+def norm_responder(user_review:str, responder_temperature:float = 0):
+    responder_model = ChatOpenAI(model="gpt-4", temperature=responder_temperature)
+    norm_prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", "Respond to review"),
+            ("human", "{review}")
+        ]
+    )
+    responder_chain = norm_prompt | responder_model
+    response = responder_chain.invoke({"review" : user_review})
     
+    return response.content
     
 
